@@ -23,7 +23,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 600px;
+            max-width: 650px; /* Slightly wider to accommodate new section */
             text-align: center;
         }
 
@@ -129,6 +129,73 @@
         .hidden {
             display: none;
         }
+
+        /* --- New Insights Section Styles --- */
+        #insights-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px dashed #ccc;
+            text-align: left;
+        }
+        #insights-section h2 {
+            color: #17a2b8;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        #insight-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box; /* Include padding/border in the element's total width and height */
+        }
+        #submit-insight-btn {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            width: 100%;
+        }
+        #submit-insight-btn:hover {
+            background-color: #138496;
+        }
+        #insights-display {
+            margin-top: 20px;
+            border: 1px solid #eee;
+            padding: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .insight-entry {
+            border-bottom: 1px dotted #ccc;
+            padding: 8px 0;
+            font-size: 0.9em;
+        }
+        .insight-entry:last-child {
+            border-bottom: none;
+        }
+        .insight-text {
+            font-style: italic;
+            display: block;
+        }
+        .insight-time {
+            color: #6c757d;
+            font-size: 0.8em;
+            margin-top: 3px;
+            display: block;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -147,7 +214,16 @@
             Score: <span id="score">0</span> / <span id="total-questions">6</span>
         </div>
         <button id="start-btn">Start Quiz</button>
-    </div>
+
+        <div id="insights-section">
+            <h2>📝 Share Your Insights & Reflections</h2>
+            <textarea id="insight-input" placeholder="What is your biggest takeaway from this topic, or what surprised you the most from the article?"></textarea>
+            <button id="submit-insight-btn">Submit Insight</button>
+            <div id="insights-display">
+                <p style="text-align: center; color: #6c757d;">Your submitted insights will appear here.</p>
+            </div>
+        </div>
+        </div>
 
     <script>
         const questions = [
@@ -225,6 +301,11 @@
         const scoreElement = document.getElementById('score');
         const totalQuestionsElement = document.getElementById('total-questions');
         const questionBox = document.getElementById('question-box');
+        
+        // New elements for Insights
+        const insightInput = document.getElementById('insight-input');
+        const submitInsightBtn = document.getElementById('submit-insight-btn');
+        const insightsDisplay = document.getElementById('insights-display');
 
         totalQuestionsElement.textContent = questions.length; // Set total questions count
 
@@ -238,6 +319,7 @@
                 endGame();
             }
         });
+        submitInsightBtn.addEventListener('click', saveInsight); // New Listener
 
         // --- Game Logic Functions ---
 
@@ -317,10 +399,61 @@
             nextButton.classList.add('hidden');
         }
 
-        // Initial state on load (ensures UI is clean before start)
+        // --- Insights Functions (Local Storage) ---
+
+        function loadInsights() {
+            // Retrieve insights from local storage
+            const insights = JSON.parse(localStorage.getItem('classInsights')) || [];
+            insightsDisplay.innerHTML = ''; // Clear display
+
+            if (insights.length === 0) {
+                 insightsDisplay.innerHTML = '<p style="text-align: center; color: #6c757d;">No insights yet. Be the first to share!</p>';
+                 return;
+            }
+
+            // Display each insight
+            insights.reverse().forEach(insight => { // Show newest first
+                const entry = document.createElement('div');
+                entry.classList.add('insight-entry');
+                entry.innerHTML = `
+                    <span class="insight-text">"${insight.text}"</span>
+                    <span class="insight-time">Submitted on: ${new Date(insight.timestamp).toLocaleDateString()} at ${new Date(insight.timestamp).toLocaleTimeString()}</span>
+                `;
+                insightsDisplay.appendChild(entry);
+            });
+        }
+
+        function saveInsight() {
+            const insightText = insightInput.value.trim();
+            if (insightText === "") {
+                alert("Please write your insight before submitting.");
+                return;
+            }
+
+            // Get existing insights or initialize an empty array
+            const insights = JSON.parse(localStorage.getItem('classInsights')) || [];
+            
+            // Create the new insight object
+            const newInsight = {
+                text: insightText,
+                timestamp: Date.now()
+            };
+
+            // Add the new insight, save to storage, and clear the input
+            insights.push(newInsight);
+            localStorage.setItem('classInsights', JSON.stringify(insights));
+            insightInput.value = '';
+
+            // Reload the display
+            loadInsights();
+            alert("Insight submitted! Scroll down to see it.");
+        }
+
+        // Initial state on load
         window.onload = function() {
             resetState(); 
             questionBox.classList.add('hidden');
+            loadInsights(); // Load insights when the page first opens
         }
 
     </script>
