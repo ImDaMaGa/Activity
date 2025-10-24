@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media & Mental Health Review Quiz</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #007BFF;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+        }
+
+        #question-box {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+        }
+
+        .btn-grid {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .answer-btn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            text-align: left;
+            text-decoration: none;
+            display: block;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        .answer-btn:hover:not(:disabled) {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .answer-btn:disabled {
+            cursor: default;
+            opacity: 0.6;
+        }
+
+        .correct {
+            background-color: #28a745 !important; /* Green */
+            color: white;
+        }
+
+        .incorrect {
+            background-color: #dc3545 !important; /* Red */
+            color: white;
+        }
+
+        #feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        #feedback-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #next-btn, #start-btn {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        #next-btn:hover, #start-btn:hover {
+            background-color: #e0a800;
+        }
+
+        #score-box {
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #007BFF;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>🧠 Social Media Impact Quiz 📱</h1>
+        <div id="question-box" class="hidden">
+            <p id="question-text">Question will load here...</p>
+            <div id="answer-buttons" class="btn-grid">
+                </div>
+        </div>
+        <div id="feedback-box" class="hidden">
+            <p id="feedback-text"></p>
+            <button id="next-btn" class="hidden">Next Question</button>
+        </div>
+        <div id="score-box">
+            Score: <span id="score">0</span> / <span id="total-questions">6</span>
+        </div>
+        <button id="start-btn">Start Quiz</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "1. Who are the two experts mentioned in the article who specialize in the impact of social media on mental health?",
+                answers: [
+                    { text: "A. Luisa Corrales and Julian Corrales", correct: false },
+                    { text: "B. Julian Rodríguez and Luisa Corrales", correct: true },
+                    { text: "C. Wayuu and Afro-Colombians", correct: false },
+                    { text: "D. Bogotá and Medellín", correct: false }
+                ],
+                explanation: "The correct experts are **Julian Rodríguez and Luisa Corrales**."
+            },
+            {
+                question: "2. According to the article, approximately how many times a day do Colombians check their smartphones on average?",
+                answers: [
+                    { text: "A. 5 times", correct: false },
+                    { text: "B. 12 times", correct: false },
+                    { text: "C. 85 times", correct: true },
+                    { text: "D. 11 hours", correct: false }
+                ],
+                explanation: "Colombians check their smartphones approximately **85 times** a day."
+            },
+            {
+                question: "3. What specific region of the brain is mentioned as being potentially thinned by excessive screen time, according to expert Julian Rodríguez?",
+                answers: [
+                    { text: "A. The cerebellum", correct: false },
+                    { text: "B. The hippocampus", correct: false },
+                    { text: "C. The amygdala", correct: false },
+                    { text: "D. The cortex", correct: true }
+                ],
+                explanation: "Julian Rodríguez mentioned that excessive screen time can thin **The cortex**."
+            },
+            {
+                question: "4. What crucial hormone, responsible for sleep, is suppressed by the blue light emitted from screens?",
+                answers: [
+                    { text: "A. Adrenaline", correct: false },
+                    { text: "B. Dopamine", correct: false },
+                    { text: "C. Serotonin", correct: false },
+                    { text: "D. Melatonin", correct: true }
+                ],
+                explanation: "Blue light suppresses **Melatonin**, the sleep hormone."
+            },
+            {
+                question: "5. What is the central risk social media poses to the traditional culture of Indigenous communities like the Wayuu in La Guajira?",
+                answers: [
+                    { text: "A. Weakening of familial bonds.", correct: false },
+                    { text: "B. Eroding traditional oral storytelling.", correct: true },
+                    { text: "C. Reducing attention spans.", correct: false },
+                    { text: "D. Increasing anxiety and depression.", correct: false }
+                ],
+                explanation: "The central risk mentioned is **Eroding traditional oral storytelling**."
+            },
+            {
+                question: "6. What culturally sensitive activity is proposed by the experts for Colombian schools to integrate alongside digital literacy programs?",
+                answers: [
+                    { text: "A. Advanced programming lessons.", correct: false },
+                    { text: "B. Dance or music activities.", correct: true },
+                    { text: "C. Public speaking competitions.", correct: false },
+                    { text: "D. Family-wide coding challenges.", correct: false }
+                ],
+                explanation: "Experts propose integrating **Dance or music activities**."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionTextElement = document.getElementById('question-text');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const feedbackBox = document.getElementById('feedback-box');
+        const feedbackText = document.getElementById('feedback-text');
+        const nextButton = document.getElementById('next-btn');
+        const startButton = document.getElementById('start-btn');
+        const scoreElement = document.getElementById('score');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const questionBox = document.getElementById('question-box');
+
+        totalQuestionsElement.textContent = questions.length; // Set total questions count
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startGame);
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                setNextQuestion();
+            } else {
+                endGame();
+            }
+        });
+
+        // --- Game Logic Functions ---
+
+        function startGame() {
+            startButton.classList.add('hidden');
+            questionBox.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreElement.textContent = score;
+            setNextQuestion();
+        }
+
+        function setNextQuestion() {
+            resetState();
+            showQuestion(questions[currentQuestionIndex]);
+        }
+
+        function showQuestion(question) {
+            questionTextElement.innerText = question.question;
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('answer-btn');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            // Hide feedback box and next button
+            feedbackBox.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            // Clear previous answers
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const correct = selectedButton.dataset.correct === "true";
+            const currentQuestion = questions[currentQuestionIndex];
+
+            // Disable all buttons after one selection
+            Array.from(answerButtonsElement.children).forEach(button => {
+                if (button.dataset.correct === "true") {
+                    button.classList.add('correct');
+                }
+                button.disabled = true;
+            });
+
+            if (correct) {
+                score++;
+                scoreElement.textContent = score;
+                selectedButton.classList.add('correct');
+                feedbackText.innerHTML = `✅ **Correct!** ${currentQuestion.explanation}`;
+            } else {
+                selectedButton.classList.add('incorrect');
+                feedbackText.innerHTML = `❌ **Incorrect.** ${currentQuestion.explanation}`;
+            }
+
+            // Show feedback and next button
+            feedbackBox.classList.remove('hidden');
+            nextButton.classList.remove('hidden');
+        }
+
+        function endGame() {
+            resetState();
+            questionBox.classList.add('hidden');
+            feedbackText.innerHTML = `Quiz finished! You scored **${score}** out of ${questions.length}. Great job!`;
+            feedbackBox.classList.remove('hidden');
+            startButton.innerText = "Restart Quiz";
+            startButton.classList.remove('hidden');
+            nextButton.classList.add('hidden');
+        }
+
+        // Initial state on load (ensures UI is clean before start)
+        window.onload = function() {
+            resetState(); 
+            questionBox.classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
